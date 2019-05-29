@@ -1,10 +1,4 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- * <p>
- * https://www.renren.io
- * <p>
- * 版权所有，侵权必究！
- */
+
 
 package com.xxoocode.card.service.impl;
 
@@ -19,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
+@Service("shiroService")
 public class ShiroServiceImpl implements ShiroService {
     @Autowired
     private UserDao sysUserDao;

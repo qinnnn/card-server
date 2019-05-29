@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xxoocode.card.dao.CardBagDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.xxoocode.card.entity.CardBagEntity" id="cardBagMap">
+        <result property="cardBagId" column="card_bag_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="bagName" column="bag_name"/>
+        <result property="bagType" column="bag_type"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+</mapper>

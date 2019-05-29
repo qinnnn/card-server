@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -18,6 +19,7 @@ public class UserEntity implements Serializable {
     private String password;
     private String salt;
     private String mobile;
+    private BigDecimal money;
     private Date updateTime;
     private Date createTime;
     private Integer status;

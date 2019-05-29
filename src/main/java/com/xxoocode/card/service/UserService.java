@@ -9,4 +9,11 @@ public interface UserService extends IService<UserEntity> {
      * @param userEntity
      */
     void saveUser(UserEntity userEntity);
+
+    /**
+     * 获取用户信息
+     * @param userId
+     * @return
+     */
+    UserEntity getUserInfoById(Long userId);
 }

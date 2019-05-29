@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.xxoocode.card.entity.SelfAppealDao">
+<mapper namespace="com.xxoocode.card.dao.UserDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.xxoocode.card.entity.UserEntity" id="userMap">
@@ -11,10 +11,15 @@
         <result property="password" column="password"/>
         <result property="salt" column="salt"/>
         <result property="mobile" column="mobile"/>
+        <result property="money" column="money"/>
         <result property="updateTime" column="update_time"/>
         <result property="createTime" column="create_time"/>
         <result property="status" column="status"/>
         <result property="delFlag" column="del_flag"/>
     </resultMap>
+
+    <select id="getUserInfoById" resultType="com.xxoocode.card.entity.UserEntity" parameterType="java.lang.Long">
+        SELECT user_id,name,mobile,money,create_time FROM user WHERE user_id = #{userId};
+    </select>
 
 </mapper>

@@ -14,9 +14,6 @@ import java.util.Date;
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements UserService {
 
-    @Autowired
-    private UserDao userDao;
-
     @Override
     public void saveUser(UserEntity user) {
         user.setCreateTime(new Date());
@@ -24,5 +21,10 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         user.setPassword(new Sha256Hash(user.getPassword(), salt).toHex());
         user.setSalt(salt);
         this.save(user);
+    }
+
+    @Override
+    public UserEntity getUserInfoById(Long userId) {
+        return baseMapper.getUserInfoById(userId);
     }
 }

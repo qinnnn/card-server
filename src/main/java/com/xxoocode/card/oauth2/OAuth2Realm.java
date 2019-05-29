@@ -75,6 +75,6 @@ public class OAuth2Realm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        return null;
+        return new SimpleAuthorizationInfo();
     }
 }

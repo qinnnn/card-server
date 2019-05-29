@@ -26,6 +26,11 @@ public class UserController {
     @Autowired
     private UserTokenService userTokenService;
 
+    /**
+     * 登录
+     * @param userEntity
+     * @return
+     */
     @PostMapping("/login")
     public R login(@RequestBody UserEntity userEntity){
 
@@ -43,18 +48,14 @@ public class UserController {
         R r = userTokenService.createToken(user.getUserId());
 
 //        UserEntity user = userService.getUserById(userId);
-        return r;
-    }
-
-    @RequestMapping("/list")
-    @ResponseBody
-    public R list(@RequestParam Map<String, Object> params){
-        List<UserEntity> userEntityList = userService.list(new QueryWrapper<UserEntity>().eq("status",0).eq("del_flag",0));
-        return R.ok().put("list",userEntityList);
+        UserEntity userEntity1 = userService.getUserInfoById(user.getUserId());
+        return r.put("user",userEntity1);
     }
 
     /**
      * 保存
+     * @param sysUser
+     * @return
      */
     @RequestMapping("/save")
 //    @RequiresPermissions("sys:user:save")
@@ -68,6 +69,8 @@ public class UserController {
 
         //生成token，并保存到数据库
         R r = userTokenService.createToken(sysUser.getUserId());
-        return r;
+
+        UserEntity userEntity = userService.getUserInfoById(sysUser.getUserId());
+        return r.put("user",userEntity);
     }
 }
