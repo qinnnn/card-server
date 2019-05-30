@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends AbstractController{
 
     @Autowired
     private UserService userService;
@@ -61,7 +61,6 @@ public class UserController {
 //    @RequiresPermissions("sys:user:save")
     public R save(@RequestBody UserEntity sysUser) {
         ValidatorUtils.validateEntity(sysUser, AddGroup.class);
-
         Date date = new Date();
         sysUser.setUpdateTime(date);
         sysUser.setCreateTime(date);

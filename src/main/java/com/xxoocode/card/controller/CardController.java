@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("card")
-public class CardController {
+public class CardController extends AbstractController {
     @Autowired
     private CardService cardService;
 
@@ -37,7 +37,7 @@ public class CardController {
      * 列表
      */
     @RequestMapping("/list")
-    @RequiresPermissions("generator:card:list")
+//    @RequiresPermissions("generator:card:list")
     public R list(@RequestParam Map<String, Object> params){
         List<CardEntity> page = cardService.list(new QueryWrapper<CardEntity>());
 
