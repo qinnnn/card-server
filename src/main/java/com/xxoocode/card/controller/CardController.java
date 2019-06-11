@@ -1,6 +1,7 @@
 package com.xxoocode.card.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -60,8 +61,9 @@ public class CardController extends AbstractController {
      * 保存
      */
     @RequestMapping("/save")
-    @RequiresPermissions("generator:card:save")
+//    @RequiresPermissions("generator:card:save")
     public R save(@RequestBody CardEntity card){
+        card.setCreateTime(new Date());
 			cardService.save(card);
 
         return R.ok();

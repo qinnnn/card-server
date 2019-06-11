@@ -7,14 +7,25 @@
     <resultMap type="com.xxoocode.card.entity.CardEntity" id="cardMap">
         <result property="cardId" column="card_id"/>
         <result property="cardName" column="card_name"/>
+        <result property="cardImg" column="card_img"/>
         <result property="crystal" column="crystal"/>
         <result property="type" column="type"/>
         <result property="life" column="life"/>
         <result property="agg" column="agg"/>
-        <result property="hurt" column="hurt"/>
-        <result property="effectIds" column="effect_ids"/>
+        <result property="speed" column="speed"/>
         <result property="entType" column="ent_type"/>
+        <result property="specialType" column="special_type"/>
         <result property="rarity" column="rarity"/>
+        <result property="oppor" column="oppor"/>
+        <result property="ranges" column="ranges"/>
+        <result property="isEffect" column="is_effect"/>
+        <result property="effectLife" column="effect_life"/>
+        <result property="effectAgg" column="effect_agg"/>
+        <result property="effectSpeed" column="effect_speed"/>
+        <result property="effectAppoint" column="effect_appoint"/>
+        <result property="effectSpecialType" column="effect_special_type"/>
+        <result property="effectBreach" column="effect_breach"/>
+        <result property="keyword" column="keyword"/>
         <result property="introduce" column="introduce"/>
         <result property="createTime" column="create_time"/>
     </resultMap>

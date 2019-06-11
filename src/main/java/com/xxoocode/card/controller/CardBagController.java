@@ -6,8 +6,10 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xxoocode.card.entity.CardBagEntity;
+import com.xxoocode.card.entity.CardEntity;
 import com.xxoocode.card.entity.UserCardEntity;
 import com.xxoocode.card.service.CardBagService;
+import com.xxoocode.card.service.CardService;
 import com.xxoocode.common.utils.R;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +33,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class CardBagController {
     @Autowired
     private CardBagService cardBagService;
+    @Autowired
+    private CardService cardService;
 
     /**
      * 列表
      */
     @RequestMapping("/list")
-    @RequiresPermissions("generator:cardbag:list")
+//    @RequiresPermissions("generator:cardbag:list")
     public R list(@RequestParam Map<String, Object> params){
-        List<CardBagEntity> page = cardBagService.list(new QueryWrapper<CardBagEntity>());
+        String page = params.get("page").toString().trim();
+        String limit = params.get("limit").toString().trim();
 
-        return R.ok().put("list", page);
+        List<CardBagEntity> cardBagList = cardBagService.list(new QueryWrapper<CardBagEntity>());
+
+        List<CardEntity> cardList = cardService.list(new QueryWrapper<CardEntity>().last("order by crystal limit "+((Integer.parseInt(page) - 1) * Integer.parseInt(limit))+","+Integer.parseInt(limit)));
+
+        return R.ok().put("cardBagList", cardBagList).put("cardList",cardList);
     }
 
 
