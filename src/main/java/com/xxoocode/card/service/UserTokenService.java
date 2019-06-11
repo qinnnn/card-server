@@ -27,5 +27,7 @@ public interface UserTokenService extends IService<UserTokenEntity> {
      */
     void logout(Long userId);
 
+    UserTokenEntity queryByToken(String token);
+
 }
 

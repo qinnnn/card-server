@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 
-@Service("UserTokenService")
+@Service("userTokenService")
 public class UserTokenServiceImpl extends ServiceImpl<UserTokenDao, UserTokenEntity> implements UserTokenService {
     //12小时后过期
     private final static int EXPIRE = 3600 * 12;
@@ -64,5 +64,10 @@ public class UserTokenServiceImpl extends ServiceImpl<UserTokenDao, UserTokenEnt
         tokenEntity.setUserId(userId);
         tokenEntity.setToken(token);
         this.removeById(tokenEntity);
+    }
+
+    @Override
+    public UserTokenEntity queryByToken(String token) {
+        return baseMapper.queryByToken(token);
     }
 }
