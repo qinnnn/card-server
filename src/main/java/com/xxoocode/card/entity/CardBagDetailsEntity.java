@@ -35,6 +35,8 @@ public class CardBagDetailsEntity implements Serializable {
 	 * 此卡牌的数量
 	 */
 	private Integer number;
+	private Integer rarity;
+	private Integer crystal;
 	/**
 	 * 创建时间
 	 */
@@ -99,5 +101,21 @@ public class CardBagDetailsEntity implements Serializable {
 	 */
 	public Date getCreateTime() {
 		return createTime;
+	}
+
+	public Integer getRarity() {
+		return rarity;
+	}
+
+	public void setRarity(Integer rarity) {
+		this.rarity = rarity;
+	}
+
+	public Integer getCrystal() {
+		return crystal;
+	}
+
+	public void setCrystal(Integer crystal) {
+		this.crystal = crystal;
 	}
 }

@@ -2,7 +2,10 @@ package com.xxoocode.card.dao;
 
 import com.xxoocode.card.entity.CardBagEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xxoocode.card.entity.CardBagExEntity;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 用户卡包表
@@ -13,5 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CardBagDao extends BaseMapper<CardBagEntity> {
-	
+    List<CardBagExEntity> getBagList();
 }

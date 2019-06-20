@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xxoocode.card.entity.CardBagEntity;
+import com.xxoocode.card.entity.CardBagExEntity;
 import com.xxoocode.card.entity.CardEntity;
 import com.xxoocode.card.entity.UserCardEntity;
 import com.xxoocode.card.service.CardBagService;
@@ -45,7 +46,7 @@ public class CardBagController {
         String page = params.get("page").toString().trim();
         String limit = params.get("limit").toString().trim();
 
-        List<CardBagEntity> cardBagList = cardBagService.list(new QueryWrapper<CardBagEntity>());
+        List<CardBagExEntity> cardBagList = cardBagService.getBagList();
 
         List<CardEntity> cardList = cardService.list(new QueryWrapper<CardEntity>().last("order by crystal limit "+((Integer.parseInt(page) - 1) * Integer.parseInt(limit))+","+Integer.parseInt(limit)));
 

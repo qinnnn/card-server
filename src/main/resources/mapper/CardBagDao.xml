@@ -13,4 +13,28 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
 
+    <resultMap type="com.xxoocode.card.entity.CardBagExEntity" id="cardBagList">
+        <id property="cardBagId" column="card_bag_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="bagName" column="bag_name"/>
+        <result property="bagType" column="bag_type"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+        <collection property="cardBagDetailsEntityList" ofType="com.xxoocode.card.entity.CardBagDetailsEntity">
+            <result property="cardId" column="card_id"/>
+            <result property="rarity" column="rarity"/>
+            <result property="crystal" column="crystal"/>
+            <result property="cardName" column="card_name"/>
+            <result property="number" column="number"/>
+            <result property="createTime" column="create_time"/>
+        </collection>
+    </resultMap>
+
+    <select id="getBagList" resultMap="cardBagList">
+        SELECT card_bag.*,
+        card_bag_details.card_id,card_bag_details.number,card_bag_details.create_time,card_bag_details.rarity,card_bag_details.crystal,card_bag_details.card_name
+        FROM card_bag
+        LEFT JOIN card_bag_details ON card_bag_details.card_bag_id = card_bag.card_bag_id
+    </select>
+
 </mapper>

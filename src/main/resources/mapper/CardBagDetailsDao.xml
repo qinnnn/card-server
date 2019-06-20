@@ -9,6 +9,9 @@
         <result property="cardBagId" column="card_bag_id"/>
         <result property="cardId" column="card_id"/>
         <result property="number" column="number"/>
+        <result property="cardName" column="card_name"/>
+        <result property="crystal" column="crystal"/>
+        <result property="rarity" column="rarity"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
 
