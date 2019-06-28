@@ -1,19 +1,18 @@
 package com.xxoocode.card.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.xxoocode.card.entity.CardBagEntity;
-import com.xxoocode.card.entity.CardBagExEntity;
-import com.xxoocode.card.entity.CardEntity;
-import com.xxoocode.card.entity.UserCardEntity;
+import com.xxoocode.card.entity.*;
+import com.xxoocode.card.service.CardBagDetailsService;
 import com.xxoocode.card.service.CardBagService;
 import com.xxoocode.card.service.CardService;
 import com.xxoocode.common.utils.R;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("cardbag")
-public class CardBagController {
+public class CardBagController extends AbstractController {
     @Autowired
     private CardBagService cardBagService;
     @Autowired
     private CardService cardService;
+    @Autowired
+    private CardBagDetailsService cardBagDetailsService;
 
     /**
      * 列表
@@ -69,10 +70,30 @@ public class CardBagController {
      * 保存
      */
     @RequestMapping("/save")
-    @RequiresPermissions("generator:cardbag:save")
-    public R save(@RequestBody CardBagEntity cardBag){
-			cardBagService.save(cardBag);
-
+    @Transactional
+//    @RequiresPermissions("generator:cardbag:save")
+    public R save(@RequestBody Map<String, Object> params){
+        String bagName = params.get("bagName").toString().trim();
+        String[] str = params.get("arr").toString().trim().split("-#-");
+        List<CardBagDetailsEntity> list = new ArrayList<>();
+        CardBagEntity cardBagEntity = new CardBagEntity();
+        cardBagEntity.setBagName(bagName);
+        cardBagEntity.setCreateTime(new Date());
+        cardBagEntity.setUserId(getUserId());
+        cardBagService.save(cardBagEntity);
+        for(String strs : str){
+            JSONObject jsonObject = JSONObject.parseObject(strs);
+            CardBagDetailsEntity cardBagDetailsEntity = new CardBagDetailsEntity();
+            cardBagDetailsEntity.setCardBagId(cardBagEntity.getCardBagId());
+            cardBagDetailsEntity.setCardName(jsonObject.getString("cardName"));
+            cardBagDetailsEntity.setNumber(jsonObject.getInteger("number"));
+            cardBagDetailsEntity.setCrystal(jsonObject.getInteger("crystal"));
+            cardBagDetailsEntity.setCardId(jsonObject.getLong("cardId"));
+            cardBagDetailsEntity.setRarity(jsonObject.getInteger("rarity"));
+            cardBagDetailsEntity.setCreateTime(new Date());
+            list.add(cardBagDetailsEntity);
+        }
+        cardBagDetailsService.saveBatch(list);
         return R.ok();
     }
 
@@ -80,9 +101,30 @@ public class CardBagController {
      * 修改
      */
     @RequestMapping("/update")
-    @RequiresPermissions("generator:cardbag:update")
-    public R update(@RequestBody CardBagEntity cardBag){
-			cardBagService.updateById(cardBag);
+    @Transactional
+//    @RequiresPermissions("generator:cardbag:update")
+    public R update(@RequestBody Map<String, Object> params){
+        String bagName = params.get("bagName").toString().trim();
+        String[] str = params.get("arr").toString().trim().split("-#-");
+        String cardBagId = params.get("cardBagId").toString().trim();
+        CardBagEntity cardBagEntity = cardBagService.getById(Long.valueOf(cardBagId));
+        cardBagEntity.setBagName(bagName);
+        cardBagService.updateById(cardBagEntity);
+        cardBagDetailsService.remove(new QueryWrapper<CardBagDetailsEntity>().eq("card_bag_id",cardBagId));
+        List<CardBagDetailsEntity> list = new ArrayList<>();
+        for(String strs : str){
+            JSONObject jsonObject = JSONObject.parseObject(strs);
+            CardBagDetailsEntity cardBagDetailsEntity = new CardBagDetailsEntity();
+            cardBagDetailsEntity.setCardBagId(cardBagEntity.getCardBagId());
+            cardBagDetailsEntity.setCardName(jsonObject.getString("cardName"));
+            cardBagDetailsEntity.setNumber(jsonObject.getInteger("number"));
+            cardBagDetailsEntity.setCrystal(jsonObject.getInteger("crystal"));
+            cardBagDetailsEntity.setCardId(jsonObject.getLong("cardId"));
+            cardBagDetailsEntity.setRarity(jsonObject.getInteger("rarity"));
+            cardBagDetailsEntity.setCreateTime(new Date());
+            list.add(cardBagDetailsEntity);
+        }
+        cardBagDetailsService.saveBatch(list);
 
         return R.ok();
     }

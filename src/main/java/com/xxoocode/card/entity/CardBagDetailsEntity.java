@@ -37,6 +37,7 @@ public class CardBagDetailsEntity implements Serializable {
 	private Integer number;
 	private Integer rarity;
 	private Integer crystal;
+	private String cardName;
 	/**
 	 * 创建时间
 	 */
@@ -117,5 +118,13 @@ public class CardBagDetailsEntity implements Serializable {
 
 	public void setCrystal(Integer crystal) {
 		this.crystal = crystal;
+	}
+
+	public String getCardName() {
+		return cardName;
+	}
+
+	public void setCardName(String cardName) {
+		this.cardName = cardName;
 	}
 }
