@@ -15,6 +15,6 @@ import java.util.List;
  * @date 2019-05-29 15:33:38
  */
 public interface CardBagService extends IService<CardBagEntity> {
-    List<CardBagExEntity> getBagList();
+    List<CardBagExEntity> getBagList(Long userId);
 }
 

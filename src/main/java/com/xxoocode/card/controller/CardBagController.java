@@ -47,11 +47,25 @@ public class CardBagController extends AbstractController {
         String page = params.get("page").toString().trim();
         String limit = params.get("limit").toString().trim();
 
-        List<CardBagExEntity> cardBagList = cardBagService.getBagList();
+        List<CardBagExEntity> cardBagList = cardBagService.getBagList(getUserId());
 
         List<CardEntity> cardList = cardService.list(new QueryWrapper<CardEntity>().last("order by crystal limit "+((Integer.parseInt(page) - 1) * Integer.parseInt(limit))+","+Integer.parseInt(limit)));
 
         return R.ok().put("cardBagList", cardBagList).put("cardList",cardList);
+    }
+
+    /**
+     * 卡包列表
+     */
+    @RequestMapping("/cardBagList")
+//    @RequiresPermissions("generator:cardbag:list")
+    public R cardBagList(@RequestParam Map<String, Object> params){
+        String page = params.get("page").toString().trim();
+        String limit = params.get("limit").toString().trim();
+
+        List<CardBagExEntity> cardBagList = cardBagService.getBagList(getUserId());
+
+        return R.ok().put("cardBagList", cardBagList);
     }
 
 

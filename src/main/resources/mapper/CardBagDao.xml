@@ -30,11 +30,12 @@
         </collection>
     </resultMap>
 
-    <select id="getBagList" resultMap="cardBagList">
+    <select id="getBagList" resultMap="cardBagList" parameterType="java.lang.Long">
         SELECT card_bag.*,
         card_bag_details.card_id,card_bag_details.number,card_bag_details.create_time,card_bag_details.rarity,card_bag_details.crystal,card_bag_details.card_name
         FROM card_bag
         LEFT JOIN card_bag_details ON card_bag_details.card_bag_id = card_bag.card_bag_id
+        WHERE card_bag.user_id = #{userId}
     </select>
 
 </mapper>

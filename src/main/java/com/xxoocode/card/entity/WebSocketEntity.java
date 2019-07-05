@@ -21,4 +21,5 @@ public class WebSocketEntity implements Serializable { //房间entity
     private Long twoCardId; //玩家2卡包
     private Long twoUserId;
     private Integer type; //当前类型 0为一人等待的房间 1为已匹配完成房间
+    private Date createTime;
 }

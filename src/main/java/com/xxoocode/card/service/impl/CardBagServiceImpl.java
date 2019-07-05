@@ -19,7 +19,7 @@ public class CardBagServiceImpl extends ServiceImpl<CardBagDao, CardBagEntity> i
     private CardBagDao cardBagDao;
 
     @Override
-    public List<CardBagExEntity> getBagList() {
-        return baseMapper.getBagList();
+    public List<CardBagExEntity> getBagList(Long userId) {
+        return baseMapper.getBagList(userId);
     }
 }

@@ -16,5 +16,5 @@ import java.util.List;
  */
 @Mapper
 public interface CardBagDao extends BaseMapper<CardBagEntity> {
-    List<CardBagExEntity> getBagList();
+    List<CardBagExEntity> getBagList(Long userId);
 }

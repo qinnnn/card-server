@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 
 /**
  * 对战用websocket
@@ -67,6 +68,23 @@ public class WebSocket {
         webSocketSet.add(this);  // 添加到set中
         webSocketMap.put(session,this);    // 添加到map中
         addOnlineCount();    // 添加在线人数
+        for(int i=0;i<webSocketSet.size();i++){ //下发变动更新
+            webSocketSet.forEach(new Consumer<WebSocket>() {
+                @Override
+                public void accept(WebSocket webSocket) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("key","online");
+                    jsonObject.put("type",0);
+                    jsonObject.put("msg","人数变动");
+                    jsonObject.put("online",getOnlineCount());
+                    try {
+                        webSocket.session.getBasicRemote().sendText(jsonObject.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
         System.out.println("有人加入，当前在线人数为："  + getOnlineCount());
     }
 
@@ -78,6 +96,23 @@ public class WebSocket {
         webSocketMap.remove(session);
         webSocketSet.remove(this);
         subOnlineCount();
+        for(int i=0;i<webSocketSet.size();i++){ //下发变动更新
+            webSocketSet.forEach(new Consumer<WebSocket>() {
+                @Override
+                public void accept(WebSocket webSocket) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("key","online");
+                    jsonObject.put("type",0);
+                    jsonObject.put("msg","人数变动");
+                    jsonObject.put("online",getOnlineCount());
+                    try {
+                        webSocket.session.getBasicRemote().sendText(jsonObject.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
         System.out.println("有人离开，当前在线人数为：" + getOnlineCount());
     }
 
@@ -136,9 +171,11 @@ public class WebSocket {
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("key","token");
-            jsonObject.put("type",1); //1表示已有房间需要重连等等
-            jsonObject.put("msg","正在尝试重连...");
+            jsonObject.put("type",0);
+            jsonObject.put("msg","欢迎回来");
+            jsonObject.put("online",getOnlineCount());
             mysession.getBasicRemote().sendText(jsonObject.toString());
+
         }else{ // 不存在用户-生成uuid进行保存 并且将用户的信息保存下来，以便进行后续匹配
             HashMap<String,Object> hashMap = new HashMap<String,Object>();
             hashMap.put("session",mysession);
@@ -151,6 +188,7 @@ public class WebSocket {
             jsonObject.put("key","token");
             jsonObject.put("type",0); //0表示进入准备匹配状态
             jsonObject.put("msg","已连接成功");
+            jsonObject.put("online",getOnlineCount());
             mysession.getBasicRemote().sendText(jsonObject.toString());
         }
     }
@@ -164,7 +202,7 @@ public class WebSocket {
      */
     public void mateVerification(JSONObject object,String message,Session mysession) throws IOException {
         //key 为mate表示进行房间匹配
-        UserTokenEntity userTokenEntity = userTokenService.queryByToken(object.getString("value")); //根据token的值获取用户信息
+        UserTokenEntity userTokenEntity = userTokenService.queryByToken(object.getString("token")); //根据token的值获取用户信息
         if (userTokenEntity == null){
             return; //用户信息不存在 假的token
         }
@@ -192,6 +230,7 @@ public class WebSocket {
             webSocketEntity.setType(1);
             webSocketEntity.setUuid(uuid);
             webSocketEntity.setOneCardId(Long.valueOf(object.get("cardId").toString()));
+            webSocketEntity.setCreateTime(new Date());
             rommSockeList.add(webSocketEntity);
         }
     }
