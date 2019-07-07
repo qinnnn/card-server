@@ -9,6 +9,7 @@ import com.xxoocode.card.entity.UserTokenEntity;
 import com.xxoocode.card.entity.WebSocketEntity;
 import com.xxoocode.card.service.ShiroService;
 import com.xxoocode.card.service.UserTokenService;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -122,12 +123,31 @@ public class WebSocket {
     @OnMessage
     public void onMessage(String message,Session mysession) throws Exception{
         JSONObject object = JSONObject.parseObject(message);
+        //token验证
+        UserTokenEntity tokenEntity = userTokenService.queryByToken(object.getString("token"));
+        //token失效
+        if (tokenEntity == null || tokenEntity.getExpireTime().getTime() < System.currentTimeMillis()) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("key","login");
+            jsonObject.put("msg","token失效");
+            mysession.getBasicRemote().sendText(jsonObject.toString());
+            return;
+        }
+        for(int i=0;i<rommSockeList.size();i++){
+            if ((rommSockeList.get(i).getOneUserId().equals(tokenEntity.getUserId())||rommSockeList.get(i).getTwoUserId().equals(tokenEntity.getUserId()))&&rommSockeList.get(i).getType().equals(1)){
+                JSONObject jsonObjects = new JSONObject();
+                jsonObjects.put("key","reconnect");
+                jsonObjects.put("msg","重连对战");
+                jsonObjects.put("room",rommSockeList.get(i).getUuid());
+                mysession.getBasicRemote().sendText(jsonObjects.toString());
+            }
+        }
         switch (object.getString("key")){
             case "token": //key值为token表示刚连接，准备接入服务器
-                tokenVerification(object,message,mysession);
+                tokenVerification(object,message,mysession,tokenEntity);
                 break;
             case "mate": //key 为mate表示进行房间匹配
-                mateVerification(object,message,mysession);
+                mateVerification(object,message,mysession,tokenEntity);
                 break;
         }
     }
@@ -154,12 +174,8 @@ public class WebSocket {
      * @param mysession
      * @throws IOException
      */
-    public void tokenVerification(JSONObject object,String message,Session mysession) throws IOException { //key值为token表示刚连接，准备接入服务器
+    public void tokenVerification(JSONObject object,String message,Session mysession,UserTokenEntity userTokenEntity) throws IOException { //key值为token表示刚连接，准备接入服务器
         //添加到匹配对战列表内
-        UserTokenEntity userTokenEntity = userTokenService.queryByToken(object.getString("value")); //根据token的值获取用户信息
-        if (userTokenEntity == null){
-            return; //用户信息不存在 假的token
-        }
         Boolean isUser = false;
         for (HashMap<String,Object> hashMap :userList){ //判断是否已存在用户
             if(hashMap.get("userId").equals(userTokenEntity.getUserId())){
@@ -200,17 +216,17 @@ public class WebSocket {
      * @param mysession
      * @throws IOException
      */
-    public void mateVerification(JSONObject object,String message,Session mysession) throws IOException {
+    public void mateVerification(JSONObject object,String message,Session mysession,UserTokenEntity userTokenEntity) throws IOException {
         //key 为mate表示进行房间匹配
-        UserTokenEntity userTokenEntity = userTokenService.queryByToken(object.getString("token")); //根据token的值获取用户信息
-        if (userTokenEntity == null){
-            return; //用户信息不存在 假的token
-        }
         Boolean room = false;
-        WebSocketEntity webSocketEntity = new WebSocketEntity();
-        for(WebSocketEntity webSocketroom:rommSockeList){
-            if (webSocketroom.getType()==0){
-                webSocketEntity = webSocketroom;
+        Integer num = 0;
+        Boolean mateState = false;
+        for(int i=0;i<rommSockeList.size();i++){
+            if(rommSockeList.get(i).getOneUserId().equals(userTokenEntity.getUserId())||rommSockeList.get(i).getTwoUserId().equals(userTokenEntity.getUserId())){
+                mateState = true;
+            }
+            if (rommSockeList.get(i).getType()==0&&(!rommSockeList.get(i).getOneUserId().equals(userTokenEntity.getUserId())&&!rommSockeList.get(i).getTwoUserId().equals(userTokenEntity.getUserId()))){
+                num = i;
                 room = true;
             }
         }
@@ -220,14 +236,29 @@ public class WebSocket {
         jsonObject.put("msg","匹配中...");
         mysession.getBasicRemote().sendText(jsonObject.toString());
 
-        if (room){ //有在匹配中的房间 直接加入
+        if (mateState){ //如果已有在匹配中则不进行继续创建房间
+            return;
+        }
 
+        if (room){ //有在匹配中的房间 直接加入
+            rommSockeList.get(num).setTwo(this);
+            rommSockeList.get(num).setTwoUserId(userTokenEntity.getUserId());
+            rommSockeList.get(num).setType(1);
+            rommSockeList.get(num).setTwoCardId(Long.valueOf(object.get("cardId").toString()));
+
+            jsonObject.put("key","mate");
+            jsonObject.put("type",1); //匹配完成
+            jsonObject.put("msg","匹配完成");
+            jsonObject.put("room",rommSockeList.get(num).getUuid());
+            mysession.getBasicRemote().sendText(jsonObject.toString());
+            rommSockeList.get(num).getOne().session.getBasicRemote().sendText(jsonObject.toString());
         }else{ //无房间 创建房间进行等待
+            WebSocketEntity webSocketEntity = new WebSocketEntity();
             //生成uuid
             String uuid = UUID.randomUUID().toString().replaceAll("-", "");
             webSocketEntity.setOne(this);
             webSocketEntity.setOneUserId(userTokenEntity.getUserId());
-            webSocketEntity.setType(1);
+            webSocketEntity.setType(0);
             webSocketEntity.setUuid(uuid);
             webSocketEntity.setOneCardId(Long.valueOf(object.get("cardId").toString()));
             webSocketEntity.setCreateTime(new Date());
